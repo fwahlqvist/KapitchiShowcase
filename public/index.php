@@ -1,4 +1,7 @@
 <?php
+
+//error_reporting(E_ALL ^ E_NOTICE);
+
 chdir(dirname(__DIR__));
 require_once 'vendor/zf2/library/Zend/Loader/AutoloaderFactory.php';
 Zend\Loader\AutoloaderFactory::factory(array('Zend\Loader\StandardAutoloader' => array()));

@@ -2,9 +2,9 @@
 
 namespace KapitchiIdentity\Form;
 
-use Zend\Form\Form;
+use ZfcBase\Form\ProvidesEventsForm;
 
-class Identity extends Form {
+class Identity extends ProvidesEventsForm {
     public function init() {
         $this->addElement('hidden', 'id');
         $this->addElement('text', 'created');

@@ -9,18 +9,29 @@ use Zend\Di\Locator,
 class KapitchiIdentity implements \Zend\Mvc\LocatorAware {
     
     public function init($module) {
-        StaticEventManager::getInstance()->attach('KapitchiIdentity\Service\Identity', 'create.pre', array($this, 'createPre'));
+        StaticEventManager::getInstance()->attach('KapitchiIdentity\Service\Identity', 'persist.post', array($this, 'createPost'));
+        StaticEventManager::getInstance()->attach('KapitchiIdentity\Service\Identity', 'persist.pre', array($this, 'createPre'));
         StaticEventManager::getInstance()->attach('di', 'newInstance', array($this, 'createForm'));
     }
     
     public function createPre($e) {
-        $data = $e->getParam('data');
-        if(!empty($data['contact'])) {
+        //$params = $e->getParams();
+        //$params['identity']->setCreated('xxx');
+        return array();
+    }
+    
+    public function createPost($e) {
+        $params = $e->getParams();
+        if(!empty($params['params']['data']['contact'])) {
             $service = $this->getLocator()->get('KapitchiContact\Service\Contact');
-            $service->persist(array(
-                'data' => $data['contact']
+            $ret = $service->persist(array(
+                'data' => $params['params']['data']['contact']
             ));
+            
+            return $ret;
         }
+        
+        return array();
     }
     
     public function createForm($e) {

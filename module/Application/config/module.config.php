@@ -3,13 +3,6 @@ return array(
     'di' => array(
         'definition' => array(
             'class' => array(
-                //MY STUFF!!!
-                'Zend\Db\Adapter' => array(
-                    'instantiator' => array(
-                        'Zend\Db\Db',
-                        'factory'
-                    ),
-                ),
             ),
         ),
         'instance' => array(
@@ -72,12 +65,6 @@ return array(
                 ),
             ),
 
-            'Zend\Db\Adapter' => array(
-                'parameters' => array(
-                    'Pdo_Mysql'
-                )
-            ),
-            
             // Setup the router and routes
             'Zend\Mvc\Router\RouteStack' => array(
                 'parameters' => array(

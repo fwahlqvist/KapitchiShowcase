@@ -13,7 +13,7 @@ class Module implements AutoloaderProvider
     public function init(Manager $moduleManager)
     {
         $events = StaticEventManager::getInstance();
-        $events->attach('bootstrap', 'bootstrap', array($this, 'initPlugins'), 100);
+        $events->attach('bootstrap', 'bootstrap', array($this, 'initPlugins'));
     }
     
     public function initPlugins($e) {

@@ -28,13 +28,10 @@ return array(
             'KapitchiIdentity\Form\Identity' => array(
                 
             ),
-            'Zend\View\PhpRenderer' => array(
-                'parameters' => array(
-                    'resolver' => 'Zend\View\TemplatePathStack',
-                    'options'  => array(
-                        'script_paths' => array(
-                            'kapitchiidentity' => __DIR__ . '/../views',
-                        ),
+            'Zend\View\Resolver\TemplatePathStack' => array(
+                'parameters'  => array(
+                    'paths' => array(
+                        'kapitchiidentity' => __DIR__ . '/../view',
                     ),
                 ),
             ),
@@ -48,7 +45,6 @@ return array(
             ),
             'KapitchiIdentity\Service\Identity' => array(
                 'parameters' => array(
-                    'locator' => 'Zend\Di\Di',
                     'mapper' => 'KapitchiIdentity\Model\Mapper\IdentityTest',
                 ),
             ),

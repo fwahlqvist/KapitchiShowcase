@@ -1,18 +1,15 @@
 <?php
 return array(
     'di' => array(
-        'definition' => array(
-            'class' => array(
-            ),
-        ),
         'instance' => array(
-            'KapitchiContact\Plugin\KapitchiIdentity' => array(
+            'KapitchiContact\Form\Contact' => array(
                 'parameters' => array(
-                    'locator' => 'Zend\Di\Di',
+                    
                 )
             ),
             'KapitchiContact\Service\Contact' => array(
                 'parameters' => array(
+                    'mapper' => 'KapitchiContact\Model\Mapper\ContactZendDb',
                 )
             ),
         ),

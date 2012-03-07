@@ -22,13 +22,26 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
         //$form->setDefaults(array('created' => time(), 'id' => 1));
         
         $service  = $this->getLocator()->get('KapitchiIdentity\Service\Identity');
-        //$ret = $service->saveFromForm($form);
         $form->isValid(array(
             'id' => null,
             'created' => time(),
             'contact' => array(
-                'firstname' => 'Matus',
-                'surname' => 'Zeman',
+                'name' => array(
+                    'givenName' => 'Matus',
+                    'familyName' => 'Zeman',
+                    'middleName' => 'Vaclav',
+                    'honorificPrefix' => 'MSc.',
+                ),
+                'phoneNumbers' => array('mobile' => array(
+                    'type' => 'mobile',
+                    'value' => '07515722300',
+                    'primary' => '1',
+                )),
+                'emails' => array('personal' => array(
+                    'type' => 'personal',
+                    'value' => 'matus.zeman@gmail.com',
+                    'primary' => '1',
+                )),
             )
         ));
         
@@ -41,7 +54,7 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
     }
     
     public function loginAction() {
-        
+        return array('xxx' => 'fsdfsd');
     }
     
     public function authenticateAction() {

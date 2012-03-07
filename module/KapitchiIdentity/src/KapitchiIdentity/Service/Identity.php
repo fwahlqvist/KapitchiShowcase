@@ -3,59 +3,49 @@
 namespace KapitchiIdentity\Service;
 
 use Zend\Form\Form,
-        KapitchiBase\Rest\RestfulServiceAbstract;
+        KapitchiBase\Service\ServiceAbstract;
 
-class Identity extends RestfulServiceAbstract {
+class Identity extends ServiceAbstract {
     protected $mapper;
-    
-    public function getList(array $filter) {
-        //TODO
-        throw new Exception("N/I");
-    }
-    
-    public function get($id) {
-        //TODO
-        throw new Exception("N/I");
-    }
     
     public function persist(array $params) {
         if(empty($params['data'])) {
             throw new \InvalidArgumentException("params[data] needs to be array");
         }
-        $data = $params['data'];
-        if(!empty($data['id'])) {
-            $ret = $this->update($data['id'], $data);
-        } else {
-            $ret = $this->create($data);
-        }
         
-        return $ret;
-    }
-    
-    public function create(array $data) {
-        $model = $this->createModelFromArray($data);
         $params = array(
-            'data' => $data,
-            'identity' => $model,
+            'params' => $params,
         );
+        
         $mapper = $this->getMapper();
         $mapper->beginTransaction();
-        $this->events()->trigger('create.pre', $this, $params);
         
+        $eventRet = $this->events()->trigger('persist.pre', $this, $params);
+        foreach($eventRet as $event) {
+            $params = array_merge_recursive($params, $event);
+        }
+        
+        $this->createModelFromArray($params['data']);
         $ret = $mapper->persist($model);
+        var_dump($ret);
+        exit;
 
-        $this->events()->trigger('create.post', $this, $params);
+        $eventRet = $this->events()->trigger('persist.post', $this, $params);
+        foreach($eventRet as $event) {
+            $params = array_merge_recursive($params, $event);
+        }
+        
         $mapper->commit();
         
-        return $ret;
+        return $params;
     }
     
-    public function update($id, array $data) {
+    public function update(array $params) {
         //TODO
         throw new \Exception("N/I");
     }
     
-    public function delete($id) {
+    public function delete(array $params) {
         //TODO
         throw new \Exception("N/I");
     }
