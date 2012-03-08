@@ -11,7 +11,23 @@ class Module implements AutoloaderProvider
 {
     public function init(Manager $moduleManager)
     {
-
+        $events = StaticEventManager::getInstance();
+        $events->attach('bootstrap', 'bootstrap', array($this, 'initBootstrap'));
+    }
+    
+    public function initBootstrap($e) {
+        $app          = $e->getParam('application');
+        $locator      = $app->getLocator();
+        
+        $events = StaticEventManager::getInstance();
+        $events->attach('KapitchiIdentity\Service\Acl', 'loadResource', function(Event $e) {
+            $acl = $e->getParam('acl');
+            $resource = $e->getParam('resource');
+            
+            $acl->addResource($resource);
+            
+            $acl->allow('user', $resource, null);
+        });
     }
     
     public function getAutoloaderConfig()

@@ -21,17 +21,12 @@ class KapitchiIdentity implements \Zend\Mvc\LocatorAware {
     }
     
     public function createPost($e) {
-        $params = $e->getParams();
-        if(!empty($params['params']['data']['contact'])) {
+        $data = $e->getParam('data');
+        if(!empty($data['contact'])) {
             $service = $this->getLocator()->get('KapitchiContact\Service\Contact');
-            $ret = $service->persist(array(
-                'data' => $params['params']['data']['contact']
-            ));
-            
+            $ret = $service->persist($data['contact']);
             return $ret;
         }
-        
-        return array();
     }
     
     public function createForm($e) {

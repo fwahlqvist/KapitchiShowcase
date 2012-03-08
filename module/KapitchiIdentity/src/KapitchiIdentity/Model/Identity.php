@@ -3,9 +3,9 @@
 namespace KapitchiIdentity\Model;
 
 class Identity extends \ZfcBase\Model\ModelAbstract {
-    private $id;
-    private $created;
-    private $ownerId;
+    protected $id;
+    protected $created;
+    protected $ownerId;
     
     public function getId() {
         return $this->id;

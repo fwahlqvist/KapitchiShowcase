@@ -33,7 +33,7 @@ $application->run()->send();
 //$x = Zend\EventManager\StaticEventManager::getInstance();
 //$x = $application->events();
 $x = $moduleManager->events();
-var_dump($x);
+//var_dump($x);
 exit;
 var_dump($x->getEvents('bootstrap'));
 $lists = $x->getListeners('bootstrap', 'bootstrap');

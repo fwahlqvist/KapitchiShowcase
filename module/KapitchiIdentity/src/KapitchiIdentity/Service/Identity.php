@@ -8,32 +8,17 @@ use Zend\Form\Form,
 class Identity extends ServiceAbstract {
     protected $mapper;
     
-    public function persist(array $params) {
-        if(empty($params['data'])) {
-            throw new \InvalidArgumentException("params[data] needs to be array");
-        }
-        
-        $params = array(
-            'params' => $params,
-        );
-        
+    public function persist(array $data) {
         $mapper = $this->getMapper();
         $mapper->beginTransaction();
         
-        $eventRet = $this->events()->trigger('persist.pre', $this, $params);
-        foreach($eventRet as $event) {
-            $params = array_merge_recursive($params, $event);
-        }
+        $params = $this->triggerParamsMergeEvent('persist.pre', array('data' => $data));
         
-        $this->createModelFromArray($params['data']);
+        $model = $this->createModelFromArray($params['data']);
         $ret = $mapper->persist($model);
-        var_dump($ret);
-        exit;
-
-        $eventRet = $this->events()->trigger('persist.post', $this, $params);
-        foreach($eventRet as $event) {
-            $params = array_merge_recursive($params, $event);
-        }
+        $params['identity'] = $model;
+        
+        $params = $this->triggerParamsMergeEvent('persist.post', $params);
         
         $mapper->commit();
         

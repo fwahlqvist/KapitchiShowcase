@@ -3,58 +3,50 @@
 namespace KapitchiIdentity\Controller;
 
 use Zend\Authentication\Adapter as AuthAdapter,
-        Exception as AuthException;
+        Exception as AuthException,
+        Zend\View\Model\ViewModel as ViewModel;
 
 class AuthController extends \Zend\Mvc\Controller\ActionController {
     public function indexAction() {
-//        $defs = $this->getLocator()->definitions();
-//        $def = new \Zend\Di\Definition\ClassDefinition('Zend\Db\Adapter\AbstractAdapter');
-//        $def->setInstantiator('Zend\Db\Db::factory');
-//        $defs->addDefinition($def);
-//        
-//        \Zend\Di\Display\Console::export($this->getLocator());
-//        exit;
-        
-        //$identityForm = new \Zend\Form\Form();
-        //$identityForm->setIsArray(true);
-        //THIS DOES THE SAME
-        $form = $this->getLocator()->get('KapitchiIdentity\Form\Identity');
-        //$form->setDefaults(array('created' => time(), 'id' => 1));
-        
-        $service  = $this->getLocator()->get('KapitchiIdentity\Service\Identity');
-        $form->isValid(array(
-            'id' => null,
-            'created' => time(),
-            'contact' => array(
-                'name' => array(
-                    'givenName' => 'Matus',
-                    'familyName' => 'Zeman',
-                    'middleName' => 'Vaclav',
-                    'honorificPrefix' => 'MSc.',
-                ),
-                'phoneNumbers' => array('mobile' => array(
-                    'type' => 'mobile',
-                    'value' => '07515722300',
-                    'primary' => '1',
-                )),
-                'emails' => array('personal' => array(
-                    'type' => 'personal',
-                    'value' => 'matus.zeman@gmail.com',
-                    'primary' => '1',
-                )),
-            )
-        ));
-        
-        $ret = $service->persist(array(
-            'data' => $form->getValues()
-        ));
-        
+        $aclService = $this->getLocator()->get('KapitchiIdentity\Service\Acl');
+        $aclService->invalidate();
+        $ret = $aclService->isAllowed('kapitchiidentity.auth.indexAction');
         var_dump($ret);
         exit;
+        /*$ret = $this->getLocator()->get('KapitchiIdentity\Service\Identity');
+        $x = $ret->persist(array(
+            'id' => 3,
+            'created' => '2012-12-12 10:00:00',
+            'ownerId' => 1,
+        ));
+        */
+
     }
     
     public function loginAction() {
-        return array('xxx' => 'fsdfsd');
+        $form = $this->getLocator()->get('KapitchiIdentity\Form\Identity');
+        
+        if($this->getRequest()->isPost()) {
+            var_dump($this->getRequest()->post());
+            exit;
+            if($form->isValid($this->getRequest()->post()->toArray())) {
+                $service  = $this->getLocator()->get('KapitchiIdentity\Service\Identity');
+                $ret = $service->persist($form->getValues());
+                var_dump('POSTED');
+                var_dump($ret);
+                exit;
+            }
+        }
+        
+        $viewModel = $this->getLocator()->get('KapitchiIdentity\View\Model\AuthLogin');
+        $viewModel->setVariable('form', $form);
+        
+        $subModel = new ViewModel();
+        $subModel->setTemplate('test');
+        
+        $viewModel->addChild($subModel, 'submodel');
+        
+        return $viewModel;
     }
     
     public function authenticateAction() {
@@ -87,6 +79,30 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
             'myhome' => 'bububub'
         );
 
+        /*
+         * array(
+                'id' => null,
+                'created' => time(),
+                'contact' => array(
+                    'name' => array(
+                        'givenName' => 'Matus',
+                        'familyName' => 'Zeman',
+                        'middleName' => 'Vaclav',
+                        'honorificPrefix' => 'MSc.',
+                    ),
+                    'phoneNumbers' => array('mobile' => array(
+                        'type' => 'mobile',
+                        'value' => '07515722300',
+                        'primary' => '1',
+                    )),
+                    'emails' => array('personal' => array(
+                        'type' => 'personal',
+                        'value' => 'matus.zeman@gmail.com',
+                        'primary' => '1',
+                    )),
+                )
+            )
+         */
         //$this->plugin('forward')->dispatch('kapitchiidentity-auth_http_authentication');
         //$result = $authService->authenticate($adapter);
 //        var_dump($result);

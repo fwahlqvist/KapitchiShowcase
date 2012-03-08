@@ -19,8 +19,8 @@ class Module implements AutoloaderProvider
     public function initPlugins($e) {
         $app          = $e->getParam('application');
         $locator      = $app->getLocator();
-        $plugin     = $locator->get('KapitchiContact\Plugin\KapitchiIdentity');
         
+        $plugin     = $locator->get('KapitchiContact\Plugin\KapitchiIdentity');
         $plugin->init($this);
     }
     

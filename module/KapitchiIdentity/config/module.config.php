@@ -5,36 +5,21 @@ return array(
     ),
     //XXX ACL is used 
     'acl' => array(
-        
+        'resources' => array(
+            
+        )
     ),
     'di' => array(
         'definition' => array(
             'class' => array(
-                //'KapitchiIdentity\Service\IdentityForm' => array('supertypes' => array('KapitchiIdentity\Service\Identity')),
-            ),
+//                'Zend\Acl\Acl' => array(
+//                    'addRole' => array(
+//                        'block' => array('type' => 'Application\Block', 'required' => true)
+//                    )
+//                )
+            )
         ),
         'instance' => array(
-            'alias' => array(
-                'kapitchiidentity-auth_controller'                          => 'KapitchiIdentity\Controller\AuthController',
-                //'kapitchiidentity-user_service'             => 'ZfcUser\Service\User',
-                'kapitchiidentity-auth_service'             => 'Zend\Authentication\AuthenticationService',
-                'kapitchiidentity-identity_service'             => 'KapitchiIdentity\Service\Identity',
-                'kapitchiidentity-http_auth_adapter'             => 'Zend\Authentication\Adapter\Http',
-                
-                //XXX
-                'kapitchiidentity-zenddb_writer'        => 'Zend\Db\Adapter\AbstractAdapter',
-                'kapitchiidentity-zenddb_reader'         => 'kapitchiidentity-zenddb_writer',
-            ),
-            'KapitchiIdentity\Form\Identity' => array(
-                
-            ),
-            'Zend\View\Resolver\TemplatePathStack' => array(
-                'parameters'  => array(
-                    'paths' => array(
-                        'kapitchiidentity' => __DIR__ . '/../view',
-                    ),
-                ),
-            ),
             'Zend\Authentication\Adapter\Http' => array(
                 'parameters' => array(
                     'config' => array(
@@ -43,27 +28,51 @@ return array(
                      ),
                 ),
             ),
+            
+            //SERVICES
             'KapitchiIdentity\Service\Identity' => array(
                 'parameters' => array(
-                    'mapper' => 'KapitchiIdentity\Model\Mapper\IdentityTest',
+                    'mapper' => 'KapitchiIdentity\Model\Mapper\IdentityZendDb',
                 ),
             ),
             
-            
-            //XXX
-            'zfcuser_write_db' => array(
+            //mappers
+            //DB adapter
+            'Zend\Db\Adapter\Adapter' => array(
                 'parameters' => array(
-                    'pdo'    => 'zfcuser_pdo',
-                    'config' => array(),
-                ),
+                    'driver' => array(
+                        'driver' => 'Pdo',
+                        'username' => 'root',
+                        'password' => '',
+                        'dsn'   => 'mysql:dbname=creditors_drazobnik;hostname=localhost',
+                    ),
+                )
             ),
-            'ZfcUser\Model\Mapper\UserZendDb' => array(
+            
+            'KapitchiIdentity\Model\Mapper\IdentityZendDb' => array(
                 'parameters' => array(
-                    'readAdapter'  => 'kapitchiidentity-zenddb_reader',
-                    'writeAdapter' => 'kapitchiidentity-zenddb_writer',
+                    'adapter' => 'Zend\Db\Adapter\Adapter',
                 ),
             ),
             
+            //View models
+            'KapitchiIdentity\View\Model\AuthLogin' => array(
+                'parameters' => array(
+                    'template' => 'auth/login',
+                    'authService' => 'KapitchiIdentity\Service\Auth',
+                ),
+            ),
+            
+            //VIEW
+            'Zend\View\Resolver\TemplatePathStack' => array(
+                'parameters'  => array(
+                    'paths' => array(
+                        'kapitchiidentity' => __DIR__ . '/../view',
+                    ),
+                ),
+            ),
+            
+            //ROUTER
             'Zend\Mvc\Router\RouteStack' => array(
                 'parameters' => array(
                     'routes' => array(
@@ -72,7 +81,7 @@ return array(
                             'options' => array(
                                 'route'    => '/identity',
                                 'defaults' => array(
-                                    'controller' => 'kapitchiidentity-auth_controller',
+                                    'controller' => 'KapitchiIdentity\Controller\AuthController',
                                     'action'     => 'index',
                                 ),
                             ),
@@ -83,7 +92,7 @@ return array(
                                     'options' => array(
                                         'route' => '/login',
                                         'defaults' => array(
-                                            'controller' => 'kapitchiidentity-auth_controller',
+                                            'controller' => 'KapitchiIdentity\Controller\AuthController',
                                             'action'     => 'login',
                                         ),
                                     ),
@@ -93,7 +102,7 @@ return array(
                                     'options' => array(
                                         'route' => '/authenticate',
                                         'defaults' => array(
-                                            'controller' => 'kapitchiidentity-auth_controller',
+                                            'controller' => 'KapitchiIdentity\Controller\AuthController',
                                             'action'     => 'authenticate',
                                         ),
                                     ),
@@ -103,7 +112,7 @@ return array(
                                     'options' => array(
                                         'route' => '/logout',
                                         'defaults' => array(
-                                            'controller' => 'kapitchiidentity-auth_controller',
+                                            'controller' => 'KapitchiIdentity\Controller\AuthController',
                                             'action'     => 'logout',
                                         ),
                                     ),
@@ -113,7 +122,7 @@ return array(
                                     'options' => array(
                                         'route' => '/register',
                                         'defaults' => array(
-                                            'controller' => 'kapitchiidentity-auth_controller',
+                                            'controller' => 'KapitchiIdentity\Controller\AuthController',
                                             'action'     => 'register',
                                         ),
                                     ),

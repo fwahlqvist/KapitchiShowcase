@@ -11,20 +11,18 @@ class Contact extends ServiceAbstract {
      */
     protected $mapper;
     
-    public function persist($params) {
-        if(empty($params['data'])) {
-            throw new \InvalidArgumentException("data needed");
-        }
+    public function persist(array $data) {
+        $params = $this->triggerParamsMergeEvent('persist.pre', array('data' => $data));
         
-        $model = $this->createModelFromArray($params['data']);
+        $model = $this->createModelFromArray($data);
         $mapper = $this->getMapper();
+        
         $ret = $this->getMapper()->persist($model);
+        $params['contact'] = $model;
         
-        $ret = array(
-            'persisted' => array($model),
-        );
+        $params = $this->triggerParamsMergeEvent('persist.post', $params);
         
-        return $ret;
+        return $params;
     }
     
     protected function createModelFromArray(array $data) {

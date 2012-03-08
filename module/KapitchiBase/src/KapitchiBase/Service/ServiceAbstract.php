@@ -15,6 +15,29 @@ class ServiceAbstract implements LocatorAware {
      */
     protected $locator;
     
+    protected function triggerParamsMergeEvent($event, array $params) {
+        $eventRet = $this->triggerEvent($event, $params);
+        foreach($eventRet as $event) {
+            if(is_array($event) || $event instanceof Traversable) {
+                $params = array_merge_recursive($params, $event);
+            }
+        }
+        
+        return $params;
+    }
+    
+    protected function triggerEvent($event, $params) {
+        return $this->events()->trigger($event, $this, $params);
+    }
+    
+    public function setLocator(Locator $locator) {
+        $this->locator = $locator;
+    }
+    
+    public function getLocator() {
+        return $this->locator;
+    }
+    
     //Zend/EventManager/ProvidesEvents trait
     /**
      * @var EventCollection
@@ -62,11 +85,4 @@ class ServiceAbstract implements LocatorAware {
     
     //END
     
-    public function setLocator(Locator $locator) {
-        $this->locator = $locator;
-    }
-    
-    public function getLocator() {
-        return $this->locator;
-    }
 }
