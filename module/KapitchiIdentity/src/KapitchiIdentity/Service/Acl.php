@@ -27,7 +27,7 @@ class Acl extends ServiceAbstract {
             ));
             
             //persist (possibly) update ACL into cache mechanism e.g. session etc.
-            $this->triggerEvent('persistAcl', array(
+            $this->triggerEvent('cacheAcl', array(
                 'acl' => $acl,
                 'role' => $roleId,
                 'resource' => $resource,
@@ -45,8 +45,8 @@ class Acl extends ServiceAbstract {
         }
     }
     
-    public function invalidate() {
-        $this->triggerEvent('invalidateAcl', array(
+    public function invalidateCache() {
+        $this->triggerEvent('invalidateCache', array(
             'role' => $this->getRoleId(),
         ));
         
@@ -54,14 +54,12 @@ class Acl extends ServiceAbstract {
     }
     
     protected function getRoleId() {
-        //TODO
-        return 'user';
+        $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
+        return $authService->getRoleId();
     }
     
     protected function getAcl() {
         if($this->acl === null) {
-            //TODO try to load it from session as temporal storage.
-            
             $result = $this->events()->trigger('loadAcl', $this, array(), function($ret) {
                 return ($ret instanceof ZendAcl);
             });
@@ -89,6 +87,8 @@ class Acl extends ServiceAbstract {
         return $acl;
     }
     
+    
+    //event listeners
     public function loadSessionAcl(Event $e) {
         $mapper = $this->getLocator()->get('KapitchiIdentity\Model\Mapper\AclSession');
         $acl = $mapper->loadByRoleId($e->getParam('role'));
@@ -100,7 +100,7 @@ class Acl extends ServiceAbstract {
         return $mapper->persist($e->getParam('acl'), $e->getParam('role'));
     }
     
-    public function invalidateSessionAcl(Event $e) {
+    public function invalidateSessionCache(Event $e) {
         $mapper = $this->getLocator()->get('KapitchiIdentity\Model\Mapper\AclSession');
         $mapper->invalidate($e->getParam('role'));
     }
@@ -128,6 +128,6 @@ class Acl extends ServiceAbstract {
         
         $events->attach('persistAcl', array($this, 'persistSessionAcl'), -10);
         
-        $events->attach('invalidateAcl', array($this, 'invalidateSessionAcl'), -10);
+        $events->attach('invalidateCache', array($this, 'invalidateSessionCache'), -10);
     }
 }

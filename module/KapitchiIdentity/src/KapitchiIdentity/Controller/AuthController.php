@@ -4,12 +4,18 @@ namespace KapitchiIdentity\Controller;
 
 use Zend\Authentication\Adapter as AuthAdapter,
         Exception as AuthException,
+        Zend\Stdlib\ResponseDescription as Response,
         Zend\View\Model\ViewModel as ViewModel;
 
 class AuthController extends \Zend\Mvc\Controller\ActionController {
     public function indexAction() {
+        $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
+
+        //var_dump($authService->getIdentity());
+        //exit;
+        
         $aclService = $this->getLocator()->get('KapitchiIdentity\Service\Acl');
-        $aclService->invalidate();
+        $aclService->invalidateCache();
         $ret = $aclService->isAllowed('kapitchiidentity.auth.indexAction');
         var_dump($ret);
         exit;
@@ -23,100 +29,58 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
 
     }
     
+    public function logoutAction() {
+        $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
+        $authService->clearIdentity();
+        
+        $this->redirect()->toRoute('kapitchiidentity');
+    }
+    
     public function loginAction() {
-        $form = $this->getLocator()->get('KapitchiIdentity\Form\Identity');
+        //test
+        //$this->events()->attach($this->getLocator()->get('KapitchiIdentity\Service\Auth\Http'));
+        $this->events()->attach($this->getLocator()->get('KapitchiIdentity\Service\Auth\Test'));
+        //END
         
-        if($this->getRequest()->isPost()) {
-            var_dump($this->getRequest()->post());
-            exit;
-            if($form->isValid($this->getRequest()->post()->toArray())) {
-                $service  = $this->getLocator()->get('KapitchiIdentity\Service\Identity');
-                $ret = $service->persist($form->getValues());
-                var_dump('POSTED');
-                var_dump($ret);
-                exit;
-            }
-        }
+        $response = $this->getResponse();
+        $request = $this->getRequest();
         
+        $form = $this->getLocator()->get('KapitchiIdentity\Form\Login');
         $viewModel = $this->getLocator()->get('KapitchiIdentity\View\Model\AuthLogin');
         $viewModel->setVariable('form', $form);
         
-        $subModel = new ViewModel();
-        $subModel->setTemplate('test');
-        
-        $viewModel->addChild($subModel, 'submodel');
-        
-        return $viewModel;
-    }
-    
-    public function authenticateAction() {
-        $authService = $this->getLocator()->get('kapitchiidentity-auth_service');
-        $response = $this->getResponse();
         $params = array(
-            'locator' => $this->getLocator(),
-            'auth_service' => $this->getRequest(),
-            'request' => $this->getRequest(),
+            'request' => $request,
             'response' => $response,
+            'viewModel' => $viewModel,
         );
         
-        $result = $this->events()->trigger('authenticate.pre', $this, $params, function($ret) {
-            return ($ret instanceof AuthAdapter || is_string($ret));//it might be DI indentifier!
+        $result = $this->events()->trigger('authenticate.init', $this, $params, function($ret) {
+            return ($ret instanceof AuthAdapter || $ret instanceof Response);
         });
         $adapter = $result->last();
-        while(!$adapter instanceof AuthAdapter) {
-            try {
-                //it might be DI indentifier!
-                $adapter = $this->getLocator()->get($adapter);
-            } catch(\Zend\Di\Exception\ClassNotFoundException $e) {
-                throw new AuthException("I really expected some AuthAdapter here!");
-            }
+        if($adapter instanceof Response) {
+            return $adapter;
         }
         
-        //var_dump($this->getEvent());
-        //exit;
-        
-        return array(
-            'myhome' => 'bububub'
-        );
+        //pre event returns AuthAdapter -- we are ready to authenticate!
+        if($adapter instanceof AuthAdapter) {
+            $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
 
-        /*
-         * array(
-                'id' => null,
-                'created' => time(),
-                'contact' => array(
-                    'name' => array(
-                        'givenName' => 'Matus',
-                        'familyName' => 'Zeman',
-                        'middleName' => 'Vaclav',
-                        'honorificPrefix' => 'MSc.',
-                    ),
-                    'phoneNumbers' => array('mobile' => array(
-                        'type' => 'mobile',
-                        'value' => '07515722300',
-                        'primary' => '1',
-                    )),
-                    'emails' => array('personal' => array(
-                        'type' => 'personal',
-                        'value' => 'matus.zeman@gmail.com',
-                        'primary' => '1',
-                    )),
-                )
-            )
-         */
-        //$this->plugin('forward')->dispatch('kapitchiidentity-auth_http_authentication');
-        //$result = $authService->authenticate($adapter);
-//        var_dump($result);
-//        exit;
-//        if(!$result->isValid()) {
-//            return $response;
-//            var_dump($response);
-//            exit;
-//            if($response->isRedirect()) {
-//                return $response;
-//            }
-//        }
-        
-//        var_dump(\Zend\Stdlib\IteratorToArray::convert($ret, true));
-        //exit;
+            $result = $authService->authenticate($adapter);
+
+            $params['adapter'] = $adapter;
+            $params['result'] = $result;
+            $result = $this->events()->trigger('authenticate.post', $this, $params, function($ret) {
+                return $ret instanceof Response;
+            });
+            //do we need to redirect again? example: http auth!
+            $response = $result->last();
+            if($response instanceof Response) {
+                return $response;
+            }
+        }
+
+        return $viewModel;
     }
 }
