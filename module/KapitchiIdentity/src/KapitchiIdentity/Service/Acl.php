@@ -10,6 +10,10 @@ use KapitchiBase\Service\ServiceAbstract,
     Zend\Acl\Exception\InvalidArgumentException as ZendAclInvalidArgumentException;
 
 class Acl extends ServiceAbstract {
+    const ROLE_GUEST = 'guest';
+    const ROLE_AUTH = 'auth';
+    const ROLE_USER = 'user';
+    
     protected $acl;
     
     public function isAllowed($resource = null, $privilege = null) {
@@ -53,6 +57,10 @@ class Acl extends ServiceAbstract {
         $this->acl = null;
     }
     
+    public function getRoles() {
+        
+    }
+    
     protected function getRoleId() {
         $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
         return $authService->getRoleId();
@@ -79,10 +87,9 @@ class Acl extends ServiceAbstract {
         $acl = $this->getLocator()->get('Zend\Acl\Acl');
         
         //init default roles
-        $acl->addRole('guest');
-        $acl->addRole('user');
-        
-        //$this->triggerEvent('init', array('acl' => $acl));
+        $acl->addRole(self::ROLE_GUEST);
+        $acl->addRole(self::ROLE_AUTH, self::ROLE_GUEST);
+        $acl->addRole(self::ROLE_USER, self::ROLE_GUEST);
         
         return $acl;
     }
@@ -126,7 +133,7 @@ class Acl extends ServiceAbstract {
         $events->attach('loadAcl', array($this, 'loadDefaultAcl'), -20);
         $events->attach('loadAcl', array($this, 'loadSessionAcl'), -10);
         
-        $events->attach('persistAcl', array($this, 'persistSessionAcl'), -10);
+        $events->attach('cacheAcl', array($this, 'persistSessionAcl'), -10);
         
         $events->attach('invalidateCache', array($this, 'invalidateSessionCache'), -10);
     }

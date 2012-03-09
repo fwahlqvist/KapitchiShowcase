@@ -20,7 +20,6 @@ class Module implements AutoloaderProvider
         $app          = $e->getParam('application');
         $locator      = $app->getLocator();
         
-        
         //route protector test
         /*$app->events()->attach('route', function(MvcEvent $e) use($locator) {
             $routeName = $e->getRouteMatch()->getMatchedRouteName();
@@ -34,6 +33,12 @@ class Module implements AutoloaderProvider
             
         }, -10);
         */
+        
+        $events = StaticEventManager::getInstance();
+        $events->attach('KapitchiIdentity\Controller\AuthController', 'authenticate.init', function(Event $e) use ($locator) {
+            $acl = $locator->get('KapitchiIdentity\Service\Acl');
+        });
+        
         $events = StaticEventManager::getInstance();
         $events->attach('KapitchiIdentity\Service\Acl', 'loadResource', function(Event $e) {
             $acl = $e->getParam('acl');

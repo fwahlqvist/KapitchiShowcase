@@ -7,7 +7,7 @@ use Zend\EventManager\EventCollection,
         Zend\Form\Form,
         KapitchiIdentity\Model\AuthIdentity;
 
-class Test extends StrategyAbstract implements IdentityResolver {
+class Test extends StrategyAbstract implements AuthIdentityResolver {
     
     public function init($e) {
         $request = $e->getParam('request');

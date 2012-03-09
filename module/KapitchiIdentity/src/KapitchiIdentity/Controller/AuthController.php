@@ -11,13 +11,12 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
     public function indexAction() {
         $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
 
-        //var_dump($authService->getIdentity());
-        //exit;
-        
         $aclService = $this->getLocator()->get('KapitchiIdentity\Service\Acl');
-        $aclService->invalidateCache();
         $ret = $aclService->isAllowed('kapitchiidentity.auth.indexAction');
+        //$new = new \Zend\Session\SessionManager();
+        //$new->start();
         var_dump($ret);
+        var_dump($_SESSION);
         exit;
         /*$ret = $this->getLocator()->get('KapitchiIdentity\Service\Identity');
         $x = $ret->persist(array(
@@ -33,13 +32,20 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
         $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
         $authService->clearIdentity();
         
-        $this->redirect()->toRoute('kapitchiidentity');
+        $res = $this->events()->trigger('logout.post', $this, array(), function($ret) {
+            return $ret instanceof Response;
+        });
+        $response = $res->last();
+        if($response instanceof Response) {
+            return $response;
+        }
     }
     
     public function loginAction() {
         //test
         //$this->events()->attach($this->getLocator()->get('KapitchiIdentity\Service\Auth\Http'));
-        $this->events()->attach($this->getLocator()->get('KapitchiIdentity\Service\Auth\Test'));
+        //$this->events()->attach($this->getLocator()->get('KapitchiIdentity\Service\Auth\Test'));
+        $this->events()->attach($this->getLocator()->get('KapitchiIdentity\Service\Auth\Credential'));
         //END
         
         $response = $this->getResponse();
@@ -55,32 +61,55 @@ class AuthController extends \Zend\Mvc\Controller\ActionController {
             'viewModel' => $viewModel,
         );
         
-        $result = $this->events()->trigger('authenticate.init', $this, $params, function($ret) {
+        $res = $this->events()->trigger('authenticate.init', $this, $params, function($ret) {
             return ($ret instanceof AuthAdapter || $ret instanceof Response);
         });
-        $adapter = $result->last();
+        $adapter = $res->last();
         if($adapter instanceof Response) {
             return $adapter;
         }
         
-        //pre event returns AuthAdapter -- we are ready to authenticate!
+        //init event returns AuthAdapter -- we are ready to authenticate!
         if($adapter instanceof AuthAdapter) {
             $authService = $this->getLocator()->get('KapitchiIdentity\Service\Auth');
 
             $result = $authService->authenticate($adapter);
-
+            
+            //do we need to redirect again? example: http auth!
+            if($result instanceof Response) {
+                return $result;
+            }
+            
             $params['adapter'] = $adapter;
             $params['result'] = $result;
-            $result = $this->events()->trigger('authenticate.post', $this, $params, function($ret) {
+            $res = $this->events()->trigger('authenticate.post', $this, $params, function($ret) {
                 return $ret instanceof Response;
             });
-            //do we need to redirect again? example: http auth!
-            $response = $result->last();
+            
+            $response = $res->last();
             if($response instanceof Response) {
                 return $response;
             }
         }
 
         return $viewModel;
+    }
+    
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+        $events = $this->events();
+        $events->attach('logout.post', array($this, 'logoutPost'));
+        $events->attach('authenticate.post', array($this, 'loginPost'));
+    }
+    
+    public function logoutPost($e) {
+        return $this->redirect()->toRoute('kapitchiidentity');
+    }
+    
+    public function loginPost($e) {
+        if($e->getParam('result')->isValid()) {
+            return $this->redirect()->toRoute('kapitchiidentity');
+        }
     }
 }

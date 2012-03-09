@@ -35,6 +35,11 @@ return array(
                     'mapper' => 'KapitchiIdentity\Model\Mapper\IdentityZendDb',
                 ),
             ),
+            'KapitchiIdentity\Service\Auth\Credential' => array(
+                'parameters' => array(
+                    'credentialMapper' => 'KapitchiIdentity\Model\Mapper\AuthCredentialZendDb',
+                ),
+            ),
             
             //mappers
             //DB adapter

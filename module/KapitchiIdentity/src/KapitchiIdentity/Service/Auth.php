@@ -5,6 +5,7 @@ namespace KapitchiIdentity\Service;
 use Zend\Authentication\AuthenticationService as ZendAuthenticationService,
         Zend\Di\Locator,
     KapitchiIdentity\Model\AuthIdentity,
+    KapitchiIdentity\Service\Acl,
     Zend\Authentication\Adapter;
 
 class Auth extends ZendAuthenticationService {
@@ -14,19 +15,21 @@ class Auth extends ZendAuthenticationService {
     public function authenticate(Adapter $adapter) {
         $result = $adapter->authenticate();
 
-        if ($this->hasIdentity()) {
+        if($this->hasIdentity()) {
             $this->clearIdentity();
         }
 
-        if ($result->isValid()) {
-            if($adapter instanceof Auth\IdentityResolver) {
+        if($result->isValid()) {
+            if($adapter instanceof Auth\AuthIdentityResolver) {
                 $authIdentity = $adapter->resolveAuthIdentity($result->getIdentity());
             }
             else {
-                $authIdentity = new AuthIdentity($result->getIdentity(), 'guest-auth');
+                $authIdentity = new AuthIdentity($result->getIdentity(), Acl::ROLE_AUTH);
             }
             $this->getStorage()->write($authIdentity);
         }
+        
+        return $result;
     }
     
     /**
@@ -38,6 +41,7 @@ class Auth extends ZendAuthenticationService {
     {
         $this->getStorage()->clear();
         
+        //clear ACL cache also!
         $acl = $this->getLocator()->get('KapitchiIdentity\Service\Acl');
         $acl->invalidateCache();
     }

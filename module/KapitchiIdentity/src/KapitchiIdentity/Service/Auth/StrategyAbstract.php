@@ -8,16 +8,54 @@ use Zend\EventManager\EventCollection,
         KapitchiBase\Service\ServiceAbstract,
         KapitchiIdentity\Model\AuthIdentity;
 
-abstract class StrategyAbstract extends ServiceAbstract implements Strategy {
+abstract class StrategyAbstract extends ServiceAbstract implements Strategy, \Zend\EventManager\ListenerAggregate {
     protected $listeners = array();
+    protected $viewModel;
+    protected $controller;
+    
+    abstract protected function init();
     
     public function attach(EventCollection $events)
     {
-        $this->listeners[] = $events->attach('authenticate.init', array($this, 'init'));
+        $this->listeners[] = $events->attach('authenticate.init', array($this, 'onInit'));
     }
     
-    abstract public function init($e);
+    public function onInit($e) {
+        $this->setViewModel($e->getParam('viewModel'));
+        $this->setController($e->getTarget());
+        
+        return $this->init();
+    }
     
+    public function getController() {
+        return $this->controller;
+    }
+
+    public function setController($controller) {
+        $this->controller = $controller;
+    }
+
+    public function getViewModel() {
+        return $this->viewModel;
+    }
+
+    public function setViewModel($viewModel) {
+        $this->viewModel = $viewModel;
+    }
+
+    public function getForm() {
+        return $this->getViewModel()->form;
+    }
+
+    public function getResponse() {
+        return $this->getController()->getResponse();
+    }
+
+    public function getRequest() {
+        return $this->getController()->getRequest();
+    }
+
+
 //    public function resolveAuthIdentity($id) {
 //        $params = array(
 //            'identity' => $id

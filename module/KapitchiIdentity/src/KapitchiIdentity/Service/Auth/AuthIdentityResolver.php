@@ -2,6 +2,6 @@
 
 namespace KapitchiIdentity\Service\Auth;
 
-interface IdentityResolver {
+interface AuthIdentityResolver {
     public function resolveAuthIdentity($id);
 }

@@ -4,58 +4,38 @@ namespace KapitchiIdentity\Service\Auth;
 
 use Zend\EventManager\EventCollection;
 
-class Http implements Strategy {
+class Http extends StrategyAbstract {
     private $adapter;
     
-    public function attach(EventCollection $events)
-    {
-        $this->listeners[] = $events->attach('authenticate.pre', array($this, 'preAuth'));
-        $this->listeners[] = $events->attach('authenticate.post', array($this, 'postAuth'));
+    public function init() {
+        return $this->getAdapter();
     }
     
-    public function preAuth($e) {
-        //TODO
-        if(false) {
-            return $this->getAdapter($e);
+    public function authenticate() {
+        $adapter = $this->getAdapter();
+        
+        $result = $adapter->authenticate();
+        if(!$result->isValid()) {
+            return $adapter->getResponse();
         }
     }
     
-    public function postAuth($e) {
-        $adapter = $e->getParam('adapter');
-        if($adapter == $this->getAdapter($e)) {
-            $result = $e->getParam('result');
-            if(!$result->isValid()) {
-                return $adapter->getResponse();
-            }
-        }
-    }
-    
-    public function getAdapter($e) {
+    public function getAdapter() {
         if($this->adapter === null) {
             //return $e->getTarget()->redirect()->toRoute('kapitchiidentity');
-            $cont = $e->getTarget();
+            $cont = $this->getController();
             $adapter = $cont->getLocator()->get('Zend\Authentication\Adapter\Http');
 
             $res = new \Zend\Authentication\Adapter\Http\FileResolver('./passwords.txt');
 
             $adapter->setBasicResolver($res);
-            $adapter->setRequest($cont->getRequest());
-            $adapter->setResponse($cont->getResponse());
+            $adapter->setRequest($this->getRequest());
+            $adapter->setResponse($this->getResponse());
             
             $this->adapter = $adapter;
         }
         
         return $this->adapter;
     }
-    
-    public function detach(EventCollection $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
-    }
-    
     
 }

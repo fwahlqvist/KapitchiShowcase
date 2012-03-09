@@ -2,6 +2,6 @@
 
 namespace KapitchiIdentity\Service\Auth;
 
-interface Strategy extends \Zend\EventManager\ListenerAggregate, \Zend\Authentication\Adapter {
+interface Strategy extends \Zend\Authentication\Adapter {
     
 }
