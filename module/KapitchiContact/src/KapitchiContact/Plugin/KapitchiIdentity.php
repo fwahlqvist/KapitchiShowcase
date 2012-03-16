@@ -9,9 +9,10 @@ use Zend\Di\Locator,
 class KapitchiIdentity implements \Zend\Mvc\LocatorAware {
     
     public function init($module) {
-        StaticEventManager::getInstance()->attach('KapitchiIdentity\Service\Identity', 'persist.post', array($this, 'createPost'));
-        StaticEventManager::getInstance()->attach('KapitchiIdentity\Service\Identity', 'persist.pre', array($this, 'createPre'));
-        StaticEventManager::getInstance()->attach('di', 'newInstance', array($this, 'createForm'));
+        $events = StaticEventManager::getInstance();
+        $events->attach('KapitchiIdentity\Service\Identity', 'persist.post', array($this, 'createPost'));
+        $events->attach('KapitchiIdentity\Service\Identity', 'persist.pre', array($this, 'createPre'));
+        $events->attach('di', 'newInstance', array($this, 'createForm'));
     }
     
     public function createPre($e) {
@@ -25,7 +26,9 @@ class KapitchiIdentity implements \Zend\Mvc\LocatorAware {
         if(!empty($data['contact'])) {
             $service = $this->getLocator()->get('KapitchiContact\Service\Contact');
             $ret = $service->persist($data['contact']);
-            return $ret;
+            $identity = $e->getParam('identity');
+            $identity->ext('KapitchiContact_Contact', $ret['contact']);
+            //return $ret;
         }
     }
     
@@ -33,7 +36,9 @@ class KapitchiIdentity implements \Zend\Mvc\LocatorAware {
         $instance = $e->getParam('instance');
         if($instance instanceof IdentityForm) {
             $newForm = $this->getLocator()->get('KapitchiContact\Form\Contact');
-            $instance->addSubForm($newForm, 'contact');
+            $newForm->setIsArray(true);
+            $extsForm = $instance->getExtsSubForm();
+            $extsForm->addSubForm($newForm, 'KapitchiContact_Contact');
         }
     }
     
