@@ -4,3 +4,6 @@
 [submodule "module/KapitchiIdentity"]
 	path = module/KapitchiIdentity
 	url = git@github.com:matuszemi/KapitchiIdentity.git
+[submodule "module/KapitchiBase"]
+	path = module/KapitchiBase
+	url = git@github.com:matuszemi/KapitchiBase.git
