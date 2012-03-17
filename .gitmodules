@@ -7,3 +7,9 @@
 [submodule "module/KapitchiBase"]
 	path = module/KapitchiBase
 	url = git@github.com:matuszemi/KapitchiBase.git
+[submodule "module/KapitchiContact"]
+	path = module/KapitchiContact
+	url = git@github.com:matuszemi/KapitchiContact.git
+[submodule "module/KapitchiContactIdentity"]
+	path = module/KapitchiContactIdentity
+	url = git@github.com:matuszemi/KapitchiContactIdentity.git
