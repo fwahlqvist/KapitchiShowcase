@@ -20,3 +20,11 @@ Requirements
 * [KapitchiIdentity](https://github.com/matuszemi/KapitchiIdentity) (latest master)
 * [KapitchiLocation](https://github.com/matuszemi/KapitchiLocation) (latest master)
 
+Installation
+------------
+All modules are under heavy development and anything might change while you're reading these lines ;)
+Database provided is just for testing purpose - it will be properly developed in MySQL Workbench (once I get it running again).  
+
+1. Clone
+2. Create database (/dev/mysql_create.sql)
+3. Copy file /config/autoload/local.config.php.dist to /config/autoload/local.config.php and edit to set connection details as needed
