@@ -13,3 +13,6 @@
 [submodule "module/KapitchiContactIdentity"]
 	path = module/KapitchiContactIdentity
 	url = git@github.com:matuszemi/KapitchiContactIdentity.git
+[submodule "module/KapitchiLocation"]
+	path = module/KapitchiLocation
+	url = git@github.com:matuszemi/KapitchiLocation.git

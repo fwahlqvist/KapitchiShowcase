@@ -1,11 +1,12 @@
 <?php
 return array(
     'modules' => array(
-        'ZfcBase',
         'Application',
         'KapitchiBase',
         'KapitchiIdentity',
+        'KapitchiLocation',
         'KapitchiContact',
+        'KapitchiContactIdentity',
     ),
     'module_listener_options' => array( 
         'config_cache_enabled' => false,
