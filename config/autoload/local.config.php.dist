@@ -10,7 +10,20 @@
  * in ZendSkeletonApplication. This is a good practice, as it prevents sensitive
  * credentials from accidentally being comitted into version control.
  */
-
 return array(
-    // ...
+    'display_exceptions'    => true,
+    'di' => array(
+        'instance' => array(
+            'Zend\Db\Adapter\Adapter' => array(
+                'parameters' => array(
+                    'driver' => array(
+                        'driver' => 'Pdo',
+                        'username' => 'root',
+                        'password' => '',
+                        'dsn'   => 'mysql:dbname=kapitchi_showcase;hostname=localhost',
+                    ),
+                )
+            ),
+        ),
+    ),
 );
