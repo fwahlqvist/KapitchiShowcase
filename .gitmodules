@@ -16,3 +16,6 @@
 [submodule "module/KapitchiLocation"]
 	path = module/KapitchiLocation
 	url = git@github.com:matuszemi/KapitchiLocation.git
+[submodule "module/KapitchiAcl"]
+	path = module/KapitchiAcl
+	url = git@github.com:matuszemi/KapitchiAcl.git
