@@ -16,12 +16,12 @@
 [submodule "module/KapitchiLocation"]
 	path = module/KapitchiLocation
 	url = git@github.com:kapitchi/KapitchiLocation.git
-[submodule "module/KapitchiOpenId"]
-	path = module/KapitchiOpenId
-	url = git@github.com:kapitchi/KapitchiOpenId.git
 [submodule "module/ZfcAcl"]
 	path = module/ZfcAcl
 	url = git@github.com:ZF-Commons/ZfcAcl.git
 [submodule "module/ZfcBase"]
 	path = module/ZfcBase
 	url = git@github.com:kapitchi/ZfcBase.git
+[submodule "module/KapitchiOpenId"]
+	path = module/KapitchiOpenId
+	url = git@github.com:kapitchi/KapitchiOpenId.git
