@@ -3,7 +3,8 @@ return array(
     'modules' => array(
         'Application',
         'KapitchiBase',
-        'KapitchiAcl',
+        'ZfcBase',
+        'ZfcAcl',
         'KapitchiIdentity',
         'KapitchiLocation',
         'KapitchiContact',

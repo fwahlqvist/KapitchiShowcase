@@ -3,19 +3,25 @@
 	url = https://github.com/zendframework/zf2.git
 [submodule "module/KapitchiIdentity"]
 	path = module/KapitchiIdentity
-	url = git@github.com:matuszemi/KapitchiIdentity.git
+	url = git@github.com:kapitchi/KapitchiIdentity.git
 [submodule "module/KapitchiBase"]
 	path = module/KapitchiBase
-	url = git@github.com:matuszemi/KapitchiBase.git
+	url = git@github.com:kapitchi/KapitchiBase.git
 [submodule "module/KapitchiContact"]
 	path = module/KapitchiContact
-	url = git@github.com:matuszemi/KapitchiContact.git
+	url = git@github.com:kapitchi/KapitchiContact.git
 [submodule "module/KapitchiContactIdentity"]
 	path = module/KapitchiContactIdentity
-	url = git@github.com:matuszemi/KapitchiContactIdentity.git
+	url = git@github.com:kapitchi/KapitchiContactIdentity.git
 [submodule "module/KapitchiLocation"]
 	path = module/KapitchiLocation
-	url = git@github.com:matuszemi/KapitchiLocation.git
-[submodule "module/KapitchiAcl"]
-	path = module/KapitchiAcl
-	url = git@github.com:matuszemi/KapitchiAcl.git
+	url = git@github.com:kapitchi/KapitchiLocation.git
+[submodule "module/KapitchiOpenId"]
+	path = module/KapitchiOpenId
+	url = git@github.com:kapitchi/KapitchiOpenId.git
+[submodule "module/ZfcAcl"]
+	path = module/ZfcAcl
+	url = git@github.com:ZF-Commons/ZfcAcl.git
+[submodule "module/ZfcBase"]
+	path = module/ZfcBase
+	url = git@github.com:kapitchi/ZfcBase.git
