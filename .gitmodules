@@ -25,3 +25,6 @@
 [submodule "module/KapitchiOpenId"]
 	path = module/KapitchiOpenId
 	url = git@github.com:kapitchi/KapitchiOpenId.git
+[submodule "module/KapitchiFileManager"]
+	path = module/KapitchiFileManager
+	url = git@github.com:kapitchi/KapitchiFileManager.git
