@@ -6,6 +6,9 @@ return array(
             'enable_guards' => array(
                 'route' => true,//enable route guard
                 'event' => true,//enable event guard
+            ),
+            'enable_loaders' => array(
+                'resource' => true,
             )
         ),
     ),

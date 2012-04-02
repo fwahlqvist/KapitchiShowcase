@@ -28,3 +28,6 @@
 [submodule "module/KapitchiFileManager"]
 	path = module/KapitchiFileManager
 	url = git@github.com:kapitchi/KapitchiFileManager.git
+[submodule "vendor/ZendService-OAuth2"]
+	path = vendor/ZendService-OAuth2
+	url = git@github.com:matuszemi/ZendService-OAuth2.git
