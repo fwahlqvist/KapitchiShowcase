@@ -9,6 +9,7 @@ return array(
         'KapitchiLocation',
         'KapitchiContact',
         'KapitchiContactIdentity',
+        'KapitchiFileManager',
         'Test',
     ),
     'module_listener_options' => array( 
