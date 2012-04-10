@@ -20,13 +20,6 @@ return array(
                         'resources' => array(
                             'Route/Default' => null,//used by ZfcAcl\Guard\Route
                         ),
-                        'roles' => array(
-                            'guest' => null,
-                            'auth' => null,
-                            'user' => 'auth',
-                            'admin' => 'user',
-                        ),
-
                         'rules' => array(
                             'allow' => array(
                                 'allow/default_route' => array(array('auth', 'guest'), 'Route/Default'),
